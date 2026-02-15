@@ -102,7 +102,9 @@ export const dataService = {
 
     // --- STORAGE ---
     async uploadFile(file, category) {
-        const fileName = `${Date.now()}-${file.name}`;
+        // Sanitize filename: remove non-ascii/weird characters for storage key
+        const safeName = file.name.replace(/[^\x00-\x7F]/g, "_").replace(/\s+/g, "_");
+        const fileName = `${Date.now()}-${safeName}`;
         const filePath = `${category}/${fileName}`;
 
         const { data, error } = await supabase.storage
