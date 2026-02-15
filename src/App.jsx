@@ -105,8 +105,8 @@ function App() {
   const [unlockModal, setUnlockModal] = useState({ open: false, folder: null });
 
   // Calculate dynamic folder counts
-  const getFolderCount = (folderId) => {
-    return items.filter(item => item.folderId === folderId).length;
+  const getFolderCount = (folder_id) => {
+    return items.filter(item => item.folder_id === folder_id).length;
   };
 
   // Check for saved session
@@ -147,9 +147,9 @@ function App() {
 
     // 3. Matches Folder (Hierarchy)
     if (currentFolder) {
-      return item.folderId === currentFolder.id;
+      return item.folder_id === currentFolder.id;
     } else {
-      return !item.folderId;
+      return !item.folder_id;
     }
   });
 
@@ -206,16 +206,16 @@ function App() {
   };
 
   // Handlers
-  const handleRenameFolder = async (e, folderId, currentName) => {
+  const handleRenameFolder = async (e, folder_id, currentName) => {
     e.stopPropagation();
     const newName = window.prompt("Enter new folder name:", currentName);
     if (newName && newName.trim() !== "") {
       try {
-        const updatedFolder = await dataService.updateFolder(folderId, { name: newName.trim() });
+        const updatedFolder = await dataService.updateFolder(folder_id, { name: newName.trim() });
         setAllFolders(prev => {
           const updated = { ...prev };
           for (const cat in updated) {
-            updated[cat] = updated[cat].map(f => f.id === folderId ? { ...f, ...updatedFolder } : f);
+            updated[cat] = updated[cat].map(f => f.id === folder_id ? { ...f, ...updatedFolder } : f);
           }
           return updated;
         });
@@ -330,13 +330,13 @@ function App() {
 
 
 
-  const handleSaveSettings = async (folderId, newSettings) => {
+  const handleSaveSettings = async (folder_id, newSettings) => {
     try {
-      const updatedFolder = await dataService.updateFolder(folderId, newSettings);
+      const updatedFolder = await dataService.updateFolder(folder_id, newSettings);
       setAllFolders(prev => {
         const updated = { ...prev };
         for (const cat in updated) {
-          updated[cat] = updated[cat].map(f => f.id === folderId ? { ...f, ...updatedFolder } : f);
+          updated[cat] = updated[cat].map(f => f.id === folder_id ? { ...f, ...updatedFolder } : f);
         }
         return updated;
       });
@@ -420,13 +420,13 @@ function App() {
     alert('Link copied to clipboard!');
   };
 
-  const handleGlobalFolderUpdate = async (folderId, newSettings) => {
+  const handleGlobalFolderUpdate = async (folder_id, newSettings) => {
     try {
-      const updatedFolder = await dataService.updateFolder(folderId, newSettings);
+      const updatedFolder = await dataService.updateFolder(folder_id, newSettings);
       setAllFolders(prev => {
         const updated = { ...prev };
         for (const cat in updated) {
-          updated[cat] = updated[cat].map(f => f.id === folderId ? { ...f, ...updatedFolder } : f);
+          updated[cat] = updated[cat].map(f => f.id === folder_id ? { ...f, ...updatedFolder } : f);
         }
         return updated;
       });

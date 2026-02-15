@@ -37,8 +37,8 @@ export const dataService = {
         return grouped;
     },
 
-    async updateFolder(folderId, settings) {
-        const { data, error } = await supabase.from('folders').update(settings).eq('id', folderId).select().single();
+    async updateFolder(folder_id, settings) {
+        const { data, error } = await supabase.from('folders').update(settings).eq('id', folder_id).select().single();
         if (error) throw error;
         return data;
     },
