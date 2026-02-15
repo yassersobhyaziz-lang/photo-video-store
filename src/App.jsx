@@ -56,7 +56,7 @@ function App() {
         }
       } catch (err) {
         console.error("Failed to fetch initial data:", err);
-        setInitError("Connectivity Error: Could not reach Supabase. Please check your Environment Variables in Vercel.");
+        setInitError(err.message || "Unknown Connection Error");
       }
     };
     initData();
@@ -154,17 +154,42 @@ function App() {
   });
 
   if (initError) {
+    const handleReset = () => {
+      localStorage.removeItem('mediaVaultUser');
+      sessionStorage.clear();
+      window.location.reload();
+    };
+
     return (
       <div className="min-h-screen bg-[#0a0a0c] flex items-center justify-center p-6">
-        <div className="glass p-8 rounded-[2rem] text-center max-w-sm">
-          <h2 className="text-xl font-bold text-red-400 mb-4">Connection Failed</h2>
-          <p className="text-zinc-500 text-sm mb-6">{initError}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="w-full py-4 rounded-2xl gradient-bg text-white font-bold"
-          >
-            Retry Connection
-          </button>
+        <div className="glass p-8 rounded-[2rem] text-center max-w-sm border border-white/5">
+          <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Bell size={32} className="text-red-400" />
+          </div>
+          <h2 className="text-xl font-bold text-white mb-2">Connection Failed</h2>
+          <p className="text-zinc-500 text-sm mb-6 leading-relaxed">
+            {initError}
+          </p>
+
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => window.location.reload()}
+              className="w-full py-4 rounded-2xl gradient-bg text-white font-bold shadow-lg shadow-purple-500/20 active:scale-95 transition-transform"
+            >
+              Retry Connection
+            </button>
+
+            <button
+              onClick={handleReset}
+              className="w-full py-4 rounded-2xl bg-white/5 text-zinc-400 font-bold hover:bg-white/10 active:scale-95 transition-all text-sm"
+            >
+              Reset App (Clear Session)
+            </button>
+          </div>
+
+          <p className="mt-6 text-[10px] text-zinc-600 uppercase tracking-widest font-bold">
+            Check network or Vercel Environment Variables
+          </p>
         </div>
       </div>
     );
