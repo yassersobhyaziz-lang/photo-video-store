@@ -56,6 +56,7 @@ function App() {
         }
       } catch (err) {
         console.error("Failed to fetch initial data:", err);
+        setInitError("Connectivity Error: Could not reach Supabase. Please check your Environment Variables in Vercel.");
       }
     };
     initData();
@@ -97,6 +98,7 @@ function App() {
   // State for Media Items and Folders
   const [items, setItems] = useState([]);
   const [allFolders, setAllFolders] = useState({});
+  const [initError, setInitError] = useState(null);
 
   // Security State
   const [folderSettingsModal, setFolderSettingsModal] = useState(null);
@@ -150,6 +152,23 @@ function App() {
       return !item.folderId;
     }
   });
+
+  if (initError) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0c] flex items-center justify-center p-6">
+        <div className="glass p-8 rounded-[2rem] text-center max-w-sm">
+          <h2 className="text-xl font-bold text-red-400 mb-4">Connection Failed</h2>
+          <p className="text-zinc-500 text-sm mb-6">{initError}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="w-full py-4 rounded-2xl gradient-bg text-white font-bold"
+          >
+            Retry Connection
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (!user) {
     return <Login users={users} onLogin={(userData, remember) => {
