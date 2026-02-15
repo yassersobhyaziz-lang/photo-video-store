@@ -227,27 +227,40 @@ function App() {
 
   // Handlers
   const handleFileUpload = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
+    const files = Array.from(event.target.files);
+    if (files.length === 0) return;
 
-    try {
-      // 1. Upload to Storage
-      const publicUrl = await dataService.uploadFile(file, activeTab);
+    const uploadResults = [];
+    const errors = [];
 
-      // 2. Insert record into DB
-      const newItemData = {
-        type: TAB_TO_TYPE[activeTab],
-        folder_id: currentFolder ? currentFolder.id : null,
-        url: publicUrl,
-        title: file.name.split('.')[0],
-        category: 'Uploads'
-      };
+    for (const file of files) {
+      try {
+        // 1. Upload to Storage
+        const publicUrl = await dataService.uploadFile(file, activeTab);
 
-      const newItem = await dataService.createItem(newItemData);
-      setItems(prev => [newItem, ...prev]);
-    } catch (err) {
-      console.error("Upload failed:", err);
-      alert("Upload failed. Please try again.");
+        // 2. Insert record into DB
+        const newItemData = {
+          type: TAB_TO_TYPE[activeTab],
+          folder_id: currentFolder ? currentFolder.id : null,
+          url: publicUrl,
+          title: file.name.split('.')[0],
+          category: 'Uploads'
+        };
+
+        const newItem = await dataService.createItem(newItemData);
+        uploadResults.push(newItem);
+      } catch (err) {
+        console.error(`Upload failed for ${file.name}:`, err);
+        errors.push(`${file.name}: ${err.message || 'Unknown error'}`);
+      }
+    }
+
+    if (uploadResults.length > 0) {
+      setItems(prev => [...uploadResults, ...prev]);
+    }
+
+    if (errors.length > 0) {
+      alert(`Some uploads failed:\n${errors.join('\n')}\n\nPlease ensure your Supabase "media-vault" bucket exists and has correct storage policies.`);
     }
   };
 
@@ -585,6 +598,7 @@ function App() {
                         id="file-upload"
                         className="hidden"
                         onChange={handleFileUpload}
+                        multiple
                         accept={activeTab === 'videos' ? 'video/*' : activeTab === 'music' ? 'audio/*' : 'image/*'}
                       />
                     </>
