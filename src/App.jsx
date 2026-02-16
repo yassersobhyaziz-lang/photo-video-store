@@ -5,7 +5,7 @@ import Login from './components/Login';
 import MediaLightbox from './components/MediaLightbox';
 import FolderSettingsModal from './components/FolderSettingsModal';
 import UnlockFolderModal from './components/UnlockFolderModal';
-import { Search, Bell, User, Filter, Grid3X3, List, ChevronRight, Folder, FolderPlus, Upload, Trash2, MoreVertical, LayoutGrid, LayoutList, Lock, CheckSquare, Download, Pencil, Settings, Heart, Play, Share2 } from 'lucide-react';
+import { Search, Bell, User, Filter, Grid3X3, List, ChevronRight, ChevronLeft, ArrowLeft, Folder, FolderPlus, Upload, Trash2, MoreVertical, LayoutGrid, LayoutList, Lock, CheckSquare, Download, Pencil, Settings, Heart, Play, Share2 } from 'lucide-react';
 
 import UserManagement from './components/UserManagement';
 import SecurityView from './components/SecurityView';
@@ -434,6 +434,52 @@ function App() {
     }
   };
 
+  const handleUserFolderAssignment = async (username, selectedFolderIds) => {
+    try {
+      const flatFolders = Object.values(allFolders).flat();
+      const updates = flatFolders.map(async (folder) => {
+        const isSelected = selectedFolderIds.includes(folder.id);
+        const currentAllowed = folder.allowed_users || [];
+        const isInAllowed = currentAllowed.includes(username);
+
+        let newAllowed = [...currentAllowed];
+        if (isSelected && !isInAllowed) {
+          newAllowed.push(username);
+        } else if (!isSelected && isInAllowed) {
+          newAllowed = newAllowed.filter(u => u !== username);
+        } else {
+          return null;
+        }
+
+        return dataService.updateFolder(folder.id, { allowed_users: newAllowed });
+      });
+
+      await Promise.all(updates.filter(p => p !== null));
+
+      setAllFolders(prev => {
+        const updated = { ...prev };
+        Object.keys(updated).forEach(cat => {
+          updated[cat] = updated[cat].map(f => {
+            const isSelected = selectedFolderIds.includes(f.id);
+            const isInAllowed = (f.allowed_users || []).includes(username);
+            if (isSelected && !isInAllowed) {
+              return { ...f, allowed_users: [...(f.allowed_users || []), username] };
+            } else if (!isSelected && isInAllowed) {
+              return { ...f, allowed_users: (f.allowed_users || []).filter(u => u !== username) };
+            }
+            return f;
+          });
+        });
+        return updated;
+      });
+
+      alert(`Permissions updated for ${username}`);
+    } catch (err) {
+      console.error("User-Folder assignment failed:", err);
+      alert("Failed to update permissions: " + err.message);
+    }
+  };
+
   const handleDelete = async () => {
     if (selectedItems.size === 0) return;
 
@@ -534,7 +580,13 @@ function App() {
         <div className="flex-1 overflow-y-auto custom-scrollbar px-8 pb-32">
 
           {activeTab === 'users' ? (
-            <UserManagement users={users} setUsers={setUsers} currentUser={user} />
+            <UserManagement
+              users={users}
+              setUsers={setUsers}
+              currentUser={user}
+              allFolders={allFolders}
+              onAssignFolders={handleUserFolderAssignment}
+            />
           ) : activeTab === 'security' ? (
             <SecurityView
               folders={allFolders}
@@ -548,8 +600,8 @@ function App() {
             />
           ) : (
             <>
-              {/* Breadcrumbs / Title */}
-              <div className="flex items-center justify-between mb-8">
+              {/* Breadcrumbs / Title - Sticky for Mobile */}
+              <div className="sticky top-0 bg-[#0a0a0c]/80 backdrop-blur-md z-40 py-4 mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <h2 className="text-3xl font-bold capitalize cursor-pointer hover:text-purple-400 transition-colors" onClick={() => setCurrentFolder(null)}>
                     {activeTab}
@@ -557,7 +609,7 @@ function App() {
                   {currentFolder && (
                     <>
                       <ChevronRight size={20} className="text-zinc-600" />
-                      <h2 className="text-3xl font-bold text-purple-400">{currentFolder.name}</h2>
+                      <h2 className="text-3xl font-bold text-purple-400 truncate max-w-[150px] sm:max-w-none">{currentFolder.name}</h2>
                     </>
                   )}
                 </div>
@@ -1000,6 +1052,16 @@ function App() {
             />
           )
         }
+
+        {/* Floating Back Button for Mobile */}
+        {currentFolder && (
+          <button
+            onClick={() => setCurrentFolder(null)}
+            className="lg:hidden fixed bottom-24 right-6 w-14 h-14 bg-purple-600 text-white rounded-full shadow-2xl flex items-center justify-center z-50 hover:scale-110 active:scale-95 transition-all animate-scale-in"
+          >
+            <ArrowLeft size={24} />
+          </button>
+        )}
 
       </main >
     </div >
