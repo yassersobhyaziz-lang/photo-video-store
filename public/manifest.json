@@ -1,0 +1,17 @@
+{
+    "name": "Media Vault",
+    "short_name": "MediaVault",
+    "description": "Secure Photo, Video and Music Gallery",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0a0a0c",
+    "theme_color": "#7c3aed",
+    "icons": [
+        {
+            "src": "/vite.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ]
+}
