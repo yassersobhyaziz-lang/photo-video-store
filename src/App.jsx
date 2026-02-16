@@ -224,7 +224,7 @@ function App() {
         const newFolderData = {
           name: name.trim(),
           category: activeTab === 'collections' || activeTab === 'favorites' ? 'photos' : activeTab, // Default to a valid category
-          visible_to: 'all'
+          visible_to: 'editor' // Default to Restricted (only staff and explicitly allowed users)
         };
         const newFolder = await dataService.createFolder(newFolderData);
         setAllFolders(prev => {
@@ -342,14 +342,20 @@ function App() {
     // 1. Admin always sees everything
     if (user.role === 'Admin') return true;
 
-    // 2. Specific User Permission (Overrides role restrictions)
+    // 2. Specific User Permission (Highest Priority)
     if (folder.allowed_users && folder.allowed_users.includes(user.username)) return true;
 
-    // 3. Role-based Visibility
-    if (!folder.visible_to || folder.visible_to === 'all') return true;
+    // 3. Viewers should NOT see anything by default unless explicitly allowed (above) 
+    // or if the folder is truly set to 'all'
+    if (user.role === 'Viewer') {
+      return folder.visible_to === 'all';
+    }
 
-    // Admin role is already handled. Editors can see 'all' and 'editor'
-    if (folder.visible_to === 'editor' && user.role === 'Editor') return true;
+    // 4. Editors can see everything except folders explicitly locked for others (logic simplified)
+    // Actually, Editors should see 'all' and 'editor' folders.
+    if (user.role === 'Editor') {
+      return !folder.visible_to || folder.visible_to === 'all' || folder.visible_to === 'editor';
+    }
 
     return false; // Hidden otherwise
   };
