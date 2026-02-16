@@ -335,11 +335,13 @@ function App() {
     if (user.role === 'Admin') return true;
 
     // 2. Specific User Permission (Overrides role restrictions)
-    if (folder.allowedUsers && folder.allowedUsers.includes(user.username)) return true;
+    if (folder.allowed_users && folder.allowed_users.includes(user.username)) return true;
 
     // 3. Role-based Visibility
-    if (!folder.visibleTo || folder.visibleTo === 'all') return true;
-    if (folder.visibleTo === 'editor' && user.role === 'Editor') return true;
+    if (!folder.visible_to || folder.visible_to === 'all') return true;
+
+    // Admin role is already handled. Editors can see 'all' and 'editor'
+    if (folder.visible_to === 'editor' && user.role === 'Editor') return true;
 
     return false; // Hidden otherwise
   };

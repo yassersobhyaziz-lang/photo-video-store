@@ -4,16 +4,16 @@ import { X, Lock, Eye, EyeOff, Shield } from 'lucide-react';
 const FolderSettingsModal = ({ folder, users, onClose, onSave }) => {
     const [password, setPassword] = useState(folder.password || '');
     const [showPassword, setShowPassword] = useState(false);
-    const [visibleTo, setVisibleTo] = useState(folder.visibleTo || 'all'); // 'all', 'admin', 'editor'
-    const [allowedUsers, setAllowedUsers] = useState(folder.allowedUsers || []);
+    const [visible_to, setVisibleTo] = useState(folder.visible_to || 'all'); // 'all', 'admin', 'editor'
+    const [allowed_users, setAllowedUsers] = useState(folder.allowed_users || []);
 
     const handleSave = (e) => {
         e.preventDefault();
         onSave(folder.id, {
             password: password.trim(),
             protected: !!password.trim(),
-            visibleTo,
-            allowedUsers
+            visible_to,
+            allowed_users
         });
         onClose();
     };
@@ -73,35 +73,35 @@ const FolderSettingsModal = ({ folder, users, onClose, onSave }) => {
                             Who can see this folder?
                         </label>
                         <div className="grid grid-cols-1 gap-2">
-                            <label className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${visibleTo === 'all'
+                            <label className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${visible_to === 'all'
                                 ? 'bg-purple-500/20 border-purple-500'
                                 : 'border-white/5 hover:bg-white/5'
                                 }`}>
-                                <input type="radio" name="visibility" value="all" checked={visibleTo === 'all'} onChange={(e) => setVisibleTo(e.target.value)} className="hidden" />
-                                <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${visibleTo === 'all' ? 'border-purple-500' : 'border-zinc-600'}`}>
-                                    {visibleTo === 'all' && <div className="w-2 h-2 rounded-full bg-purple-500" />}
+                                <input type="radio" name="visibility" value="all" checked={visible_to === 'all'} onChange={(e) => setVisibleTo(e.target.value)} className="hidden" />
+                                <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${visible_to === 'all' ? 'border-purple-500' : 'border-zinc-600'}`}>
+                                    {visible_to === 'all' && <div className="w-2 h-2 rounded-full bg-purple-500" />}
                                 </div>
                                 <div><span className="font-bold text-sm">Everyone</span></div>
                             </label>
 
-                            <label className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${visibleTo === 'editor'
+                            <label className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${visible_to === 'editor'
                                 ? 'bg-purple-500/20 border-purple-500'
                                 : 'border-white/5 hover:bg-white/5'
                                 }`}>
-                                <input type="radio" name="visibility" value="editor" checked={visibleTo === 'editor'} onChange={(e) => setVisibleTo(e.target.value)} className="hidden" />
-                                <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${visibleTo === 'editor' ? 'border-purple-500' : 'border-zinc-600'}`}>
-                                    {visibleTo === 'editor' && <div className="w-2 h-2 rounded-full bg-purple-500" />}
+                                <input type="radio" name="visibility" value="editor" checked={visible_to === 'editor'} onChange={(e) => setVisibleTo(e.target.value)} className="hidden" />
+                                <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${visible_to === 'editor' ? 'border-purple-500' : 'border-zinc-600'}`}>
+                                    {visible_to === 'editor' && <div className="w-2 h-2 rounded-full bg-purple-500" />}
                                 </div>
                                 <div><span className="font-bold text-sm">Editors & Admins Only</span></div>
                             </label>
 
-                            <label className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${visibleTo === 'admin'
+                            <label className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${visible_to === 'admin'
                                 ? 'bg-purple-500/20 border-purple-500'
                                 : 'border-white/5 hover:bg-white/5'
                                 }`}>
-                                <input type="radio" name="visibility" value="admin" checked={visibleTo === 'admin'} onChange={(e) => setVisibleTo(e.target.value)} className="hidden" />
-                                <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${visibleTo === 'admin' ? 'border-purple-500' : 'border-zinc-600'}`}>
-                                    {visibleTo === 'admin' && <div className="w-2 h-2 rounded-full bg-purple-500" />}
+                                <input type="radio" name="visibility" value="admin" checked={visible_to === 'admin'} onChange={(e) => setVisibleTo(e.target.value)} className="hidden" />
+                                <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${visible_to === 'admin' ? 'border-purple-500' : 'border-zinc-600'}`}>
+                                    {visible_to === 'admin' && <div className="w-2 h-2 rounded-full bg-purple-500" />}
                                 </div>
                                 <div>
                                     <span className="font-bold text-sm">Private (Admins + Selected Users)</span>
@@ -118,17 +118,17 @@ const FolderSettingsModal = ({ folder, users, onClose, onSave }) => {
                         </label>
                         <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto custom-scrollbar p-1">
                             {users.map(user => (
-                                <label key={user.username} className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-all ${allowedUsers.includes(user.username) ? 'bg-purple-500/10 border-purple-500/50' : 'border-white/5 hover:bg-white/5'
+                                <label key={user.username} className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-all ${allowed_users.includes(user.username) ? 'bg-purple-500/10 border-purple-500/50' : 'border-white/5 hover:bg-white/5'
                                     }`}>
                                     <input
                                         type="checkbox"
-                                        checked={allowedUsers.includes(user.username)}
+                                        checked={allowed_users.includes(user.username)}
                                         onChange={() => toggleUser(user.username)}
                                         className="hidden"
                                     />
-                                    <div className={`w-4 h-4 rounded border flex items-center justify-center ${allowedUsers.includes(user.username) ? 'bg-purple-500 border-purple-500' : 'border-zinc-600'
+                                    <div className={`w-4 h-4 rounded border flex items-center justify-center ${allowed_users.includes(user.username) ? 'bg-purple-500 border-purple-500' : 'border-zinc-600'
                                         }`}>
-                                        {allowedUsers.includes(user.username) && <div className="text-white text-[10px]">✓</div>}
+                                        {allowed_users.includes(user.username) && <div className="text-white text-[10px]">✓</div>}
                                     </div>
                                     <span className="text-sm font-medium">{user.username} <span className="text-[10px] text-zinc-500">({user.role})</span></span>
                                 </label>
