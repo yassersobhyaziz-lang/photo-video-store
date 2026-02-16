@@ -32,6 +32,26 @@ const MediaLightbox = ({ items, initialIndex, onClose, onShare }) => {
         setIsPlaying(!isPlaying);
     };
 
+    const handleDownload = async (e) => {
+        e?.stopPropagation();
+        try {
+            const response = await fetch(currentItem.url);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = currentItem.title || 'media-file';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Download failed:', error);
+            // Fallback: open in new tab
+            window.open(currentItem.url, '_blank');
+        }
+    };
+
     // Keyboard navigation
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -66,6 +86,7 @@ const MediaLightbox = ({ items, initialIndex, onClose, onShare }) => {
                     </button>
 
                     <button
+                        onClick={handleDownload}
                         className="p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors backdrop-blur-md"
                         title="Download"
                     >

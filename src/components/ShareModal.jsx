@@ -48,6 +48,38 @@ const ShareModal = ({ item, onClose }) => {
         }
     };
 
+    const handleNativeShare = async () => {
+        if (!navigator.share) {
+            alert('Your browser does not support native sharing.');
+            return;
+        }
+
+        try {
+            // Fetch the file and create a File object
+            const response = await fetch(item.url);
+            const blob = await response.blob();
+            const fileName = (item.title || 'media-file') + (item.type === 'video' ? '.mp4' : item.type === 'audio' ? '.mp3' : '.jpg');
+            const file = new File([blob], fileName, { type: blob.type });
+
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                await navigator.share({
+                    files: [file],
+                    title: item.title,
+                    text: 'Check out this media file!',
+                });
+            } else {
+                // Fallback to text sharing if file sharing is not supported
+                await navigator.share({
+                    title: item.title,
+                    text: 'Check out this media!',
+                    url: item.url
+                });
+            }
+        } catch (error) {
+            console.error('Sharing failed:', error);
+        }
+    };
+
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
@@ -85,6 +117,17 @@ const ShareModal = ({ item, onClose }) => {
                             </button>
                         ))}
                     </div>
+
+                    {/* Native Share Button - Highly Visible for File Sharing */}
+                    {navigator.share && (
+                        <button
+                            onClick={handleNativeShare}
+                            className="w-full mb-8 flex items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold shadow-lg shadow-purple-500/20 hover:scale-[1.02] active:scale-95 transition-all text-sm uppercase tracking-wider"
+                        >
+                            <Share2 size={20} />
+                            <span>Share Actual File (WhatsApp/Telegram)</span>
+                        </button>
+                    )}
 
                     <div className="relative">
                         <input
