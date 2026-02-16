@@ -10,6 +10,7 @@ import { Search, Bell, User, Filter, Grid3X3, List, ChevronRight, Folder, Folder
 import UserManagement from './components/UserManagement';
 import SecurityView from './components/SecurityView';
 import SettingsView from './components/SettingsView';
+import ShareModal from './components/ShareModal';
 import { dataService } from './lib/dataService';
 
 // Initial data is now fetched from Supabase via dataService
@@ -103,6 +104,7 @@ function App() {
   // Security State
   const [folderSettingsModal, setFolderSettingsModal] = useState(null);
   const [unlockModal, setUnlockModal] = useState({ open: false, folder: null });
+  const [shareModalItem, setShareModalItem] = useState(null);
 
   // Calculate dynamic folder counts
   const getFolderCount = (folder_id) => {
@@ -407,37 +409,7 @@ function App() {
   };
 
   const handleShare = async (item) => {
-    const shareData = {
-      title: item.title,
-      text: `Check out this ${item.type}: ${item.title}`,
-      url: item.url,
-    };
-
-    if (navigator.share) {
-      try {
-        // Try sharing as file if supported
-        const response = await fetch(item.url);
-        const blob = await response.blob();
-        const file = new File([blob], item.title, { type: blob.type });
-
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          await navigator.share({
-            files: [file],
-            title: item.title,
-          });
-        } else {
-          await navigator.share(shareData);
-        }
-      } catch (error) {
-        if (error.name !== 'AbortError') handleCopyLink(item.url);
-      }
-    } else {
-      // Social fallback
-      const encodedUrl = encodeURIComponent(item.url);
-      const encodedText = encodeURIComponent(`Check out this ${item.type}: ${item.title}`);
-      const whatsappUrl = `https://wa.me/?text=${encodedText}%20${encodedUrl}`;
-      window.open(whatsappUrl, '_blank');
-    }
+    setShareModalItem(item);
   };
 
   const handleCopyLink = (url) => {
@@ -1014,6 +986,15 @@ function App() {
               folder={unlockModal.folder}
               onClose={() => setUnlockModal({ open: false, folder: null })}
               onUnlock={handleUnlock}
+            />
+          )
+        }
+
+        {
+          shareModalItem && (
+            <ShareModal
+              item={shareModalItem}
+              onClose={() => setShareModalItem(null)}
             />
           )
         }
