@@ -5,7 +5,7 @@ import Login from './components/Login';
 import MediaLightbox from './components/MediaLightbox';
 import FolderSettingsModal from './components/FolderSettingsModal';
 import UnlockFolderModal from './components/UnlockFolderModal';
-import { Search, Bell, User, Filter, Grid3X3, List, ChevronRight, ChevronLeft, ArrowLeft, Folder, FolderPlus, Upload, Trash2, MoreVertical, LayoutGrid, LayoutList, Lock, CheckSquare, Download, Pencil, Settings, Heart, Play, Share2 } from 'lucide-react';
+import { Search, Bell, User, Filter, Grid3X3, List, ChevronRight, ChevronLeft, ArrowLeft, Folder, FolderPlus, Upload, Trash2, MoreVertical, LayoutGrid, LayoutList, Lock, CheckSquare, Download, Pencil, Settings, Heart, Play, Share2, SortAsc, Clock } from 'lucide-react';
 
 import UserManagement from './components/UserManagement';
 import SecurityView from './components/SecurityView';
@@ -100,6 +100,7 @@ function App() {
   const [items, setItems] = useState([]);
   const [allFolders, setAllFolders] = useState({});
   const [initError, setInitError] = useState(null);
+  const [sortBy, setSortBy] = useState('date'); // 'date' or 'name'
 
   // Security State
   const [folderSettingsModal, setFolderSettingsModal] = useState(null);
@@ -152,6 +153,13 @@ function App() {
       return item.folder_id === currentFolder.id;
     } else {
       return !item.folder_id;
+    }
+  }).sort((a, b) => {
+    if (sortBy === 'name') {
+      return a.title.localeCompare(b.title);
+    } else {
+      // Sort by date (newest first)
+      return new Date(b.created_at) - new Date(a.created_at);
     }
   });
 
@@ -654,6 +662,25 @@ function App() {
                       />
                     </>
                   )}
+
+                  <div className="flex items-center glass p-1 rounded-xl">
+                    <button
+                      onClick={() => setSortBy('name')}
+                      className={`p-2 rounded-lg transition-colors ${sortBy === 'name' ? 'bg-white/10 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
+                      title="Sort by Name (A-Z)"
+                    >
+                      <SortAsc size={18} />
+                    </button>
+                    <button
+                      onClick={() => setSortBy('date')}
+                      className={`p-2 rounded-lg transition-colors ${sortBy === 'date' ? 'bg-white/10 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
+                      title="Sort by Date (Newest)"
+                    >
+                      <Clock size={18} />
+                    </button>
+                  </div>
+
+                  <div className="w-px h-6 bg-white/5 mx-1 hidden sm:block"></div>
 
                   <div className="flex items-center glass p-1 rounded-xl">
                     <button
