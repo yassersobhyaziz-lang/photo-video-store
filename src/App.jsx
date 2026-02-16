@@ -345,10 +345,10 @@ function App() {
     // 2. Specific User Permission (Highest Priority)
     if (folder.allowed_users && folder.allowed_users.includes(user.username)) return true;
 
-    // 3. Viewers should NOT see anything by default unless explicitly allowed (above) 
-    // or if the folder is truly set to 'all'
+    // 3. Viewers should NOT see anything by default unless explicitly allowed (above).
+    // They are strictly limited to assigned folders only.
     if (user.role === 'Viewer') {
-      return folder.visible_to === 'all';
+      return false; // Already checked allowed_users above
     }
 
     // 4. Editors can see everything except folders explicitly locked for others (logic simplified)
@@ -719,8 +719,8 @@ function App() {
                 </div>
               </div>
 
-              {/* Folders Section (Only show if at root) */}
-              {!currentFolder && folders.length > 0 && (
+              {/* Folders Section (Only show if at root and has visible folders) */}
+              {!currentFolder && folders.filter(isFolderVisible).length > 0 && (
                 <div className="mb-10">
                   <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Folders</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
