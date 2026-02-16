@@ -51,9 +51,24 @@ export const dataService = {
 
     // --- MEDIA ITEMS ---
     async getItems() {
-        const { data, error } = await supabase.from('media_items').select('*');
-        if (error) throw error;
-        return data;
+        let allData = [];
+        let from = 0;
+        const step = 1000;
+
+        while (true) {
+            const { data, error } = await supabase
+                .from('media_items')
+                .select('*')
+                .range(from, from + step - 1);
+
+            if (error) throw error;
+            if (!data || data.length === 0) break;
+
+            allData = [...allData, ...data];
+            if (data.length < step) break;
+            from += step;
+        }
+        return allData;
     },
 
     async createItem(item) {

@@ -1,6 +1,6 @@
 import { Image, Film, Music, Library, Heart, Settings, Plus, Users, Shield, X } from 'lucide-react';
 
-const Sidebar = ({ activeTab, setActiveTab, user, isOpen, onClose, onCreateFolder }) => {
+const Sidebar = ({ activeTab, setActiveTab, user, isOpen, onClose, onCreateFolder, totalItems }) => {
   const isAdmin = user?.role === 'Admin';
 
   const navItems = [
@@ -96,6 +96,16 @@ const Sidebar = ({ activeTab, setActiveTab, user, isOpen, onClose, onCreateFolde
         </nav>
 
         <div className="mt-auto space-y-4 pt-6 border-t border-white/5 shrink-0">
+          {totalItems !== undefined && (
+            <div className="px-4 py-2 bg-white/5 rounded-xl border border-white/5">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Database Sync</span>
+                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_green]"></div>
+              </div>
+              <p className="text-xs font-bold text-white"><Library size={12} className="inline mr-1 text-purple-400" /> {totalItems} Total Files Safe</p>
+            </div>
+          )}
+
           <button
             onClick={onCreateFolder}
             className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white/5 text-zinc-400 hover:text-zinc-200 border border-dashed border-zinc-800 hover:border-zinc-700 transition-all text-sm font-bold"

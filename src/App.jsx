@@ -223,7 +223,7 @@ function App() {
       try {
         const newFolderData = {
           name: name.trim(),
-          category: activeTab === 'collections' || activeTab === 'favorites' ? 'photos' : activeTab, // Default to a valid category
+          category: activeTab, // Use current tab category directly
           visible_to: 'editor' // Default to Restricted (only staff and explicitly allowed users)
         };
         const newFolder = await dataService.createFolder(newFolderData);
@@ -544,6 +544,7 @@ function App() {
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         onCreateFolder={handleCreateFolder}
+        totalItems={items.length}
       />
 
       <main className="flex flex-col h-screen overflow-hidden relative">
