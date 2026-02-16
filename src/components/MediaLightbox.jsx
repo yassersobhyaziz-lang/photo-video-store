@@ -132,12 +132,14 @@ const MediaLightbox = ({ items, initialIndex, onClose, onShare }) => {
                     <div
                         key={item.id}
                         onClick={() => setCurrentIndex(idx)}
-                        className={`w-12 h-12 rounded-lg overflow-hidden cursor-pointer border-2 transition-all ${currentIndex === idx ? 'border-purple-500 scale-110' : 'border-transparent opacity-50 hover:opacity-100'
+                        className={`w-12 h-12 rounded-lg overflow-hidden cursor-pointer border-2 transition-all skeleton ${currentIndex === idx ? 'border-purple-500 scale-110' : 'border-transparent opacity-50 hover:opacity-100'
                             }`}
                     >
                         <img
                             src={item.type === 'video' ? item.thumbnail : item.url}
                             className="w-full h-full object-cover"
+                            loading="lazy"
+                            decoding="async"
                         />
                     </div>
                 ))}

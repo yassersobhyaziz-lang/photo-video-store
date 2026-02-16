@@ -788,7 +788,7 @@ function App() {
                   {filteredItems.map((item, index) => (
                     <div
                       key={item.id}
-                      className={`group relative rounded-2xl overflow-hidden glass aspect-[4/3] cursor-pointer transition-all duration-300 ${selectedItems.has(item.id) ? 'ring-2 ring-purple-500 scale-[0.98]' : 'hover:scale-[1.02]'
+                      className={`group relative rounded-2xl overflow-hidden glass aspect-[4/3] cursor-pointer transition-all duration-300 skeleton ${selectedItems.has(item.id) ? 'ring-2 ring-purple-500 scale-[0.98]' : 'hover:scale-[1.02]'
                         }`}
                       onDoubleClick={() => handleDoubleClick(index)}
                       onClick={() => {
@@ -854,6 +854,7 @@ function App() {
                               muted
                               loop
                               playsInline
+                              preload="none"
                             />
                             <div
                               className="absolute inset-0 flex items-center justify-center pointer-events-auto z-40"
@@ -882,6 +883,8 @@ function App() {
                           <img
                             src={item.url}
                             alt={item.title}
+                            loading="lazy"
+                            decoding="async"
                             className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
                           />
                         )
