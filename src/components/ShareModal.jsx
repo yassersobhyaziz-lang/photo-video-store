@@ -103,7 +103,30 @@ const ShareModal = ({ item, onClose }) => {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-4 mb-8">
+                    {/* Native Share Button - PRIMARY METHOD for File Sharing */}
+                    {navigator.share && (
+                        <>
+                            <div className="mb-3 text-center">
+                                <p className="text-xs font-bold text-purple-400 uppercase tracking-widest">✨ إرسال الملف الأصلي ✨</p>
+                            </div>
+                            <button
+                                onClick={handleNativeShare}
+                                className="w-full mb-8 flex items-center justify-center gap-3 px-6 py-5 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold shadow-xl shadow-purple-500/30 hover:scale-[1.03] active:scale-95 transition-all text-base"
+                            >
+                                <Share2 size={24} />
+                                <span>مشاركة الصورة/الفيديو (WhatsApp/Telegram)</span>
+                            </button>
+                        </>
+                    )}
+
+                    {/* Divider */}
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="flex-1 h-px bg-white/10"></div>
+                        <span className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">أو مشاركة الرابط فقط</span>
+                        <div className="flex-1 h-px bg-white/10"></div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4 mb-8 opacity-60">
                         {platforms.map(platform => (
                             <button
                                 key={platform.name}
@@ -117,17 +140,6 @@ const ShareModal = ({ item, onClose }) => {
                             </button>
                         ))}
                     </div>
-
-                    {/* Native Share Button - Highly Visible for File Sharing */}
-                    {navigator.share && (
-                        <button
-                            onClick={handleNativeShare}
-                            className="w-full mb-8 flex items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold shadow-lg shadow-purple-500/20 hover:scale-[1.02] active:scale-95 transition-all text-sm uppercase tracking-wider"
-                        >
-                            <Share2 size={20} />
-                            <span>Share Actual File (WhatsApp/Telegram)</span>
-                        </button>
-                    )}
 
                     <div className="relative">
                         <input
@@ -147,7 +159,9 @@ const ShareModal = ({ item, onClose }) => {
 
                 <div className="px-6 py-4 bg-white/5 text-center">
                     <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest leading-relaxed">
-                        Sharing links will grant view access to anyone with the link.
+                        {navigator.share
+                            ? 'استخدم الزر البنفسجي لإرسال الملف الأصلي • الأزرار الأخرى ترسل الرابط فقط'
+                            : 'Sharing links will grant view access to anyone with the link.'}
                     </p>
                 </div>
             </div>

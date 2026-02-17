@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
-import MusicPlayer from './components/MusicPlayer';
 import Login from './components/Login';
+import MusicPlayer from './components/MusicPlayer';
+import ShareModal from './components/ShareModal';
 import MediaLightbox from './components/MediaLightbox';
 import FolderSettingsModal from './components/FolderSettingsModal';
 import UnlockFolderModal from './components/UnlockFolderModal';
-import { Search, Bell, User, Filter, Grid3X3, List, ChevronRight, ChevronLeft, ArrowLeft, Folder, FolderPlus, Upload, Trash2, MoreVertical, LayoutGrid, LayoutList, Lock, CheckSquare, Download, Pencil, Settings, Heart, Play, Share2, SortAsc, Clock } from 'lucide-react';
-
+import SettingsView from './components/SettingsView';
 import UserManagement from './components/UserManagement';
 import SecurityView from './components/SecurityView';
-import SettingsView from './components/SettingsView';
-import ShareModal from './components/ShareModal';
 import { dataService } from './lib/dataService';
+import { getOptimizedUrl } from './lib/imageUtils';
+import {
+  Upload, X, FolderPlus, Search, Grid3x3, List, SortAsc, Calendar, Heart, Play, Share2, Menu, ChevronLeft, Download
+} from 'lucide-react';
 
 // Initial data is now fetched from Supabase via dataService
 
@@ -881,7 +883,7 @@ function App() {
                           </div>
                         ) : (
                           <img
-                            src={item.url}
+                            src={getOptimizedUrl(item.url, 'thumbnail')}
                             alt={item.title}
                             loading="lazy"
                             decoding="async"
