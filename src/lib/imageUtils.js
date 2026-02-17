@@ -1,53 +1,66 @@
 /**
- * Image Utilities for Supabase Storage
- * Provides thumbnail generation and quality optimization
+ * Image Utilities
+ * Simple passthrough for now - thumbnails require server-side processing
  */
 
 /**
- * Generate a thumbnail URL from a Supabase storage URL
- * @param {string} url - Original Supabase storage URL
- * @param {object} options - Transformation options
- * @returns {string} - Optimized URL
+ * Get optimized URL - currently returns original
+ * Future: implement server-side thumbnail generation
  */
-export const getThumbnailUrl = (url, options = {}) => {
-    if (!url || !url.includes('supabase')) return url;
-
-    const {
-        width = 400,
-        height = 300,
-        quality = 60,
-        format = 'webp'
-    } = options;
-
-    // Supabase Image Transformation API
-    // Format: /render/image/authenticated/{bucket}/{path}?width=X&height=Y&quality=Z
-    const urlParts = url.split('/storage/v1/object/public/');
-    if (urlParts.length !== 2) return url;
-
-    const [baseUrl, pathWithBucket] = urlParts;
-
-    // Add transformation parameters
-    return `${baseUrl}/storage/v1/render/image/public/${pathWithBucket}?width=${width}&height=${height}&quality=${quality}&format=${format}`;
+export const getOptimizedUrl = (url, type = 'thumbnail') => {
+    // For now, return original URL
+    // Lazy loading + CSS will handle performance
+    return url;
 };
 
 /**
- * Get optimized URL based on use case
+ * Generate a thumbnail blob from an image file (for future use)
  */
-export const getOptimizedUrl = (url, type = 'thumbnail') => {
-    if (!url) return url;
+export const generateThumbnail = (file, maxWidth = 300, maxHeight = 300, quality = 0.6) => {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        const reader = new FileReader();
 
-    // Only optimize images
-    if (!url.match(/\.(jpg|jpeg|png|webp|gif)$/i)) return url;
+        reader.onload = (e) => {
+            img.src = e.target.result;
+        };
 
-    const presets = {
-        thumbnail: { width: 400, height: 300, quality: 60 },
-        medium: { width: 800, height: 600, quality: 75 },
-        large: { width: 1200, height: 900, quality: 85 },
-        original: null // Return original URL
-    };
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
 
-    const preset = presets[type];
-    if (!preset) return url;
+            // Calculate new dimensions maintaining aspect ratio
+            let width = img.width;
+            let height = img.height;
 
-    return getThumbnailUrl(url, preset);
+            if (width > height) {
+                if (width > maxWidth) {
+                    height = (height * maxWidth) / width;
+                    width = maxWidth;
+                }
+            } else {
+                if (height > maxHeight) {
+                    width = (width * maxHeight) / height;
+                    height = maxHeight;
+                }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+
+            // Draw and compress
+            ctx.drawImage(img, 0, 0, width, height);
+
+            canvas.toBlob(
+                (blob) => blob ? resolve(blob) : reject(new Error('Failed to create thumbnail')),
+                'image/jpeg',
+                quality
+            );
+        };
+
+        img.onerror = () => reject(new Error('Failed to load image'));
+        reader.onerror = () => reject(new Error('Failed to read file'));
+
+        reader.readAsDataURL(file);
+    });
 };
