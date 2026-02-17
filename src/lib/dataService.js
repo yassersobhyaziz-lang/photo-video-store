@@ -122,6 +122,7 @@ export const dataService = {
         const fileName = `${Date.now()}-${safeName}`;
         const filePath = `${category}/${fileName}`;
 
+        // Upload original file
         const { data, error } = await supabase.storage
             .from('media-vault')
             .upload(filePath, file);
@@ -132,6 +133,32 @@ export const dataService = {
             .from('media-vault')
             .getPublicUrl(filePath);
 
-        return publicUrl;
+        // Generate and upload thumbnail for images
+        let thumbnailUrl = null;
+        if (file.type.startsWith('image/')) {
+            try {
+                const { generateThumbnail } = await import('./imageUtils');
+                const thumbnailBlob = await generateThumbnail(file, 300, 300, 0.6);
+
+                const thumbFileName = fileName.replace(/(\.[^.]+)$/, '_thumb$1');
+                const thumbPath = `${category}/${thumbFileName}`;
+
+                const { error: thumbError } = await supabase.storage
+                    .from('media-vault')
+                    .upload(thumbPath, thumbnailBlob);
+
+                if (!thumbError) {
+                    const { data: { publicUrl: thumbUrl } } = supabase.storage
+                        .from('media-vault')
+                        .getPublicUrl(thumbPath);
+                    thumbnailUrl = thumbUrl;
+                }
+            } catch (thumbError) {
+                console.warn('Failed to generate thumbnail:', thumbError);
+                // Continue without thumbnail - not critical
+            }
+        }
+
+        return { url: publicUrl, thumbnailUrl };
     }
 };

@@ -272,14 +272,17 @@ function App() {
 
     for (const file of files) {
       try {
-        // 1. Upload to Storage
-        const publicUrl = await dataService.uploadFile(file, activeTab);
+        // 1. Upload to Storage (returns { url, thumbnailUrl })
+        const uploadResult = await dataService.uploadFile(file, activeTab);
+        const publicUrl = typeof uploadResult === 'string' ? uploadResult : uploadResult.url;
+        const thumbnailUrl = uploadResult.thumbnailUrl || null;
 
         // 2. Insert record into DB
         const newItemData = {
           type: TAB_TO_TYPE[activeTab],
           folder_id: currentFolder ? currentFolder.id : null,
           url: publicUrl,
+          thumbnail: thumbnailUrl,
           title: file.name.split('.')[0],
           category: 'Uploads'
         };
@@ -883,7 +886,7 @@ function App() {
                           </div>
                         ) : (
                           <img
-                            src={getOptimizedUrl(item.url, 'thumbnail')}
+                            src={item.thumbnail || item.url}
                             alt={item.title}
                             loading="lazy"
                             decoding="async"
