@@ -12,7 +12,7 @@ import SecurityView from './components/SecurityView';
 import { dataService } from './lib/dataService';
 import { getOptimizedUrl } from './lib/imageUtils';
 import {
-  Upload, X, FolderPlus, Search, Grid3x3, List, LayoutGrid, SortAsc, Calendar, Heart, Play, Share2, Menu, ChevronLeft, Download, MoreVertical, Clock, CheckSquare, Trash2, Edit, Lock, Unlock, Eye, EyeOff, Settings
+  Upload, X, FolderPlus, Search, Grid3x3, List, LayoutGrid, LayoutList, SortAsc, Calendar, Heart, Play, Share2, Menu, ChevronLeft, Download, MoreVertical, Clock, CheckSquare, Trash2, Edit, Lock, Unlock, Eye, EyeOff, Settings, Bell, Pencil
 } from 'lucide-react';
 
 // Initial data is now fetched from Supabase via dataService
