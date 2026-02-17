@@ -713,7 +713,7 @@ function App() {
                       onClick={() => setViewMode('grid-lg')}
                       className={`p-2 rounded-lg transition-colors ${viewMode === 'grid-lg' ? 'bg-white/10 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
                     >
-                      <Grid3X3 size={18} />
+                      <Grid3x3 size={18} />
                     </button>
                     <button
                       onClick={() => setViewMode('list')}
